@@ -9,6 +9,7 @@ import dk.BdCC.bankaccountsystem.repositories.BankAccountRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import dk.BdCC.bankaccountsystem.models.datatransferobjects.BankAccountResponseRequestDTO;
@@ -32,6 +33,9 @@ public class BankAccountService {
     HttpClient httpClient = HttpClient.newHttpClient();
     String baseUrl = "https://v6.exchangerate-api.com/v6";
     ObjectMapper mapper = new ObjectMapper();
+
+    @ConfigProperty(name = "exchange-api.api-key")
+    String apiKey;
 
     @Transactional
     public BankAccountResponseRequestDTO createBankAccount(BankAccountCreateRequestDTO bARqD) {
@@ -129,7 +133,6 @@ public class BankAccountService {
     }
 
     public CurrencyConversionLatestDTO historicalAndCurrentConversionRate(LocalDate date) {
-        final String apiKey = "0f1466a027462f366009d409";
         String endpoint = String.format("%s/%s/latest/USD", baseUrl, apiKey);
         if (LocalDate.now(ZoneId.of("Europe/Copenhagen")).equals(date))
             return converterWorker(endpoint);
