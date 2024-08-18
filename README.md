@@ -1,87 +1,91 @@
-# code-with-quarkus
+Starting the application
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
-## Running the application in dev mode
+You start the application by running 
 
-You can run your application in dev mode that enables live coding using:
-
-```shell script
-./mvnw compile quarkus:dev
+```
+/src/main/java/dk.BdCC.bankaccountsystem/BASApp
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+This can be done simply by right clicking the file and left clicking the run
 
-## Packaging and running the application
+Alternatively run the command for the development system
 
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```
+./mvnw quarkus:dev
+``` 
+or to create a native executable
+```
+./mvnw install -Dnative
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+cURL commands
 
-If you want to build an _über-jar_, execute the following command:
+Creating a bank account
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```
+curl --location 'http://localhost:8080/api/bankaccount' \
+--header 'Content-Type: application/json' \
+--data '{
+    "accountNumber": "69420",
+    "fName": "Lars",
+    "lName": "Larsen"
+}'
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Add money to the balance
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```
+curl --location --request PUT 'http://localhost:8080/api/bankaccount/addbalance' \
+--header 'Content-Type: application/json' \
+--data '{
+    "incomingMoney": 222.22,
+    "id": 51
+}'
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Transfer money from one account to another
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```
+curl --location --request PUT 'http://localhost:8080/api/bankaccount/transferbalance' \
+--header 'Content-Type: application/json' \
+--data '{
+    "sender":
+    {
+        "id": 2,
+        "incomingMoney": 444.44
+    },
+    "receiver":
+    {
+        "id": 3
+    }
+}'
 ```
 
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
+Retrieve an account. This is based on the Id given as the last parameter
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+```
+curl --location 'http://localhost:8080/api/bankaccount/2'
+```
 
-## Related Guides
+I can not access the historical data using a free key. I have still created the supposed cURL commands. They remain untested, insofar as I receive an error 403.
 
-- Quarkus CXF ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-cxf/dev/reference/extensions/quarkus-cxf.html)): Core capabilities for implementing SOAP clients and JAX-WS services
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Hibernate ORM ([guide](https://quarkus.io/guides/hibernate-orm)): Define your persistent model with Hibernate ORM and Jakarta Persistence
-- REST JSON-B ([guide](https://quarkus.io/guides/rest#json-serialisation)): JSON-B serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- JDBC Driver - H2 ([guide](https://quarkus.io/guides/datasource)): Connect to the H2 database via JDBC
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and method parameters for your beans (REST, CDI, Jakarta Persistence)
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Quarkus Extension for Spring Web API ([guide](https://quarkus.io/guides/spring-web)): Use Spring Web annotations to create your REST services
+```
+curl --location 'http://localhost:8080/api/bankaccount/conversions/2008-01-05'
+```
 
-## Provided Code
+Again for the year 2012
 
-### Hibernate ORM
+```
+curl --location 'http://localhost:8080/api/bankaccount/conversions/2012-05-08'
+```
 
-Create your first JPA entity
+Lastly for today (19-08-2024. If you are testing this at a later date, please change the cURL command accordingly)
 
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
+```
+curl --location 'http://localhost:8080/api/bankaccount/conversions/2024-08-19'
+```
 
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### Spring Web
-
-Spring, the Quarkus way! Start your REST Web Services with a Spring Controller.
-
-[Related guide section...](https://quarkus.io/guides/spring-web#greetingcontroller)
+I would have made the project public, however I am a lazy bastard who didn't hide my API like I should have
