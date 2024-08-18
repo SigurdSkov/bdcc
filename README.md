@@ -88,4 +88,4 @@ Lastly for today (19-08-2024. If you are testing this at a later date, please ch
 curl --location 'http://localhost:8080/api/bankaccount/conversions/2024-08-19'
 ```
 
-I would have made the project public, however I am a lazy bastard who didn't hide my API like I should have
+Don't worry, I have deactivated the API Key
